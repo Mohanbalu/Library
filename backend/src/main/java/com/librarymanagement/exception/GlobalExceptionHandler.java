@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        Map<String, String> fieldErrors = new HashMap<>();
+        Map<String, Object> fieldErrors = new HashMap<>();
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             fieldErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, HttpServletRequest request) {
-        Map<String, String> violations = new HashMap<>();
+        Map<String, Object> violations = new HashMap<>();
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
             violations.put(violation.getPropertyPath().toString(), violation.getMessage());
         }

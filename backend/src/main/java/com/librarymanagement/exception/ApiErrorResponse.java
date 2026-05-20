@@ -24,7 +24,7 @@ public class ApiErrorResponse {
 
     private String path;
 
-    private Map<String, ?> details;
+    private Map<String, Object> details;
 
     public ApiErrorResponse(LocalDateTime timestamp, int status, String error, String message, String path) {
         this.timestamp = timestamp;
