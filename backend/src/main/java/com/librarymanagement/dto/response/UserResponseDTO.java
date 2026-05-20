@@ -13,19 +13,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BookResponseDTO implements Serializable {
+public class UserResponseDTO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Long id;
+    private Long id;
 
-	private String title;
+    private String fullName;
 
-	private String authorName;
+    private String email;
 
-	private String categoryName;
-
-	private Boolean availability;
-
-	private Integer quantity;
+    private String role;
 }
