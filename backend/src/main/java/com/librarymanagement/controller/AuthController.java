@@ -3,11 +3,13 @@ package com.librarymanagement.controller;
 import com.librarymanagement.dto.request.LoginRequestDTO;
 import com.librarymanagement.dto.request.RegisterRequestDTO;
 import com.librarymanagement.dto.response.ApiResponseDTO;
+import com.librarymanagement.dto.response.UserResponseDTO;
 import com.librarymanagement.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,17 @@ public class AuthController {
                         .success(true)
                         .message("Login successful")
                         .data(authService.loginUser(requestDTO))
+                        .build());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponseDTO> getCurrentUser() {
+        UserResponseDTO currentUser = authService.getCurrentUser();
+        return ResponseEntity.ok(
+                ApiResponseDTO.builder()
+                        .success(true)
+                        .message("Current user fetched successfully")
+                        .data(currentUser)
                         .build());
     }
 }

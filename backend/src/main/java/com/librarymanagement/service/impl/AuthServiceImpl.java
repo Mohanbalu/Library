@@ -3,11 +3,14 @@ package com.librarymanagement.service.impl;
 import com.librarymanagement.dto.request.LoginRequestDTO;
 import com.librarymanagement.dto.request.RegisterRequestDTO;
 import com.librarymanagement.dto.response.AuthResponseDTO;
+import com.librarymanagement.dto.response.UserResponseDTO;
 import com.librarymanagement.entity.Role;
 import com.librarymanagement.entity.User;
 import com.librarymanagement.enums.UserStatus;
 import com.librarymanagement.exception.BadRequestException;
 import com.librarymanagement.exception.DuplicateResourceException;
+import com.librarymanagement.exception.ResourceNotFoundException;
+import com.librarymanagement.mapper.LibraryMapper;
 import com.librarymanagement.repository.RoleRepository;
 import com.librarymanagement.repository.UserRepository;
 import com.librarymanagement.security.jwt.JwtUtil;
@@ -16,6 +19,8 @@ import com.librarymanagement.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +43,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Role userRole = roleRepository.findByRoleName(AppConstants.ROLE_USER)
-                .orElseThrow(() -> new BadRequestException("Default USER role is not configured"));
+                .orElseGet(() -> roleRepository.save(Role.builder()
+                        .roleName(AppConstants.ROLE_USER)
+                        .description("Standard library member account")
+                        .active(Boolean.TRUE)
+                        .build()));
 
         User user = User.builder()
                 .fullName(requestDTO.getFullName())
@@ -60,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+        @Transactional(readOnly = true)
     public AuthResponseDTO loginUser(LoginRequestDTO requestDTO) {
         validateUser(requestDTO);
 
@@ -83,4 +93,18 @@ public class AuthServiceImpl implements AuthService {
                         requestDTO.getPassword()));
         return true;
     }
+
+        @Override
+        @Transactional(readOnly = true)
+        public UserResponseDTO getCurrentUser() {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication == null || authentication.getName() == null) {
+                        throw new BadRequestException("User is not authenticated");
+                }
+
+                User user = userRepository.findByEmail(authentication.getName().toLowerCase())
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + authentication.getName()));
+
+                return LibraryMapper.toUserResponse(user);
+        }
 }

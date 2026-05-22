@@ -3,6 +3,7 @@ package com.librarymanagement.service;
 import com.librarymanagement.dto.request.LoginRequestDTO;
 import com.librarymanagement.dto.request.RegisterRequestDTO;
 import com.librarymanagement.dto.response.AuthResponseDTO;
+import com.librarymanagement.dto.response.UserResponseDTO;
 
 public interface AuthService {
 
@@ -11,4 +12,6 @@ public interface AuthService {
     AuthResponseDTO loginUser(LoginRequestDTO requestDTO);
 
     boolean validateUser(LoginRequestDTO requestDTO);
+
+    UserResponseDTO getCurrentUser();
 }

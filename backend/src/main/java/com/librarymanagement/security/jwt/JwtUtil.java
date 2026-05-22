@@ -1,5 +1,7 @@
 package com.librarymanagement.security.jwt;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,15 +57,30 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(issuedAt)
                 .setExpiration(expirationDate)
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .signWith(signingKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .setSigningKey(signingKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private javax.crypto.SecretKey signingKey() {
+        byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+
+        if (secretBytes.length >= 32) {
+            return Keys.hmacShaKeyFor(secretBytes);
+        }
+
+        try {
+            byte[] normalizedSecret = MessageDigest.getInstance("SHA-256").digest(secretBytes);
+            return Keys.hmacShaKeyFor(normalizedSecret);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("Unable to initialize JWT signing key", ex);
+        }
     }
 }

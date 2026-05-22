@@ -1,6 +1,5 @@
-import axios from 'axios';
-import toast from 'react-hot-toast';
 import { clearSession, getToken } from '@/utils/storage';
+import axios from 'axios';
 
 /**
  * Axios API Client with JWT Token Management
@@ -13,7 +12,7 @@ import { clearSession, getToken } from '@/utils/storage';
  */
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8089/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -74,12 +73,18 @@ apiClient.interceptors.response.use(
 
     const status = error?.response?.status;
     const data = error?.response?.data || {};
+    const requestUrl = error?.config?.url || '';
 
     // Handle 401 Unauthorized - Auto logout
     if (status === 401) {
-      clearSession();
-      window.dispatchEvent(new Event('auth:unauthorized'));
-      const errorMsg = 'Your session has expired. Please log in again.';
+      const isAuthRequest = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register');
+
+      if (!isAuthRequest) {
+        clearSession();
+        window.dispatchEvent(new Event('auth:unauthorized'));
+      }
+
+      const errorMsg = data.message || (isAuthRequest ? 'Invalid email or password.' : 'Your session has expired. Please log in again.');
       return Promise.reject(new Error(errorMsg));
     }
 

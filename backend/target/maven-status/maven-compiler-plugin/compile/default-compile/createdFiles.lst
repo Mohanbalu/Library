@@ -16,6 +16,7 @@ com\librarymanagement\service\IssueService.class
 com\librarymanagement\service\impl\FineServiceImpl.class
 com\librarymanagement\entity\Book$BookBuilder.class
 com\librarymanagement\dto\response\ApiResponseDTO.class
+com\librarymanagement\LibraryManagementApplication.class
 com\librarymanagement\dto\request\RegisterRequestDTO$RegisterRequestDTOBuilder.class
 com\librarymanagement\service\impl\AuthServiceImpl.class
 com\librarymanagement\service\TransactionService.class
@@ -61,6 +62,7 @@ com\librarymanagement\dto\request\LoginRequestDTO$LoginRequestDTOBuilder.class
 com\librarymanagement\entity\Transaction$TransactionBuilder.class
 com\librarymanagement\service\impl\BookServiceImpl.class
 com\librarymanagement\dto\response\FineResponseDTO.class
+com\librarymanagement\config\DataSeeder.class
 com\librarymanagement\service\impl\TransactionServiceImpl.class
 com\librarymanagement\enums\IssueStatus.class
 com\librarymanagement\utils\package-info.class

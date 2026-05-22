@@ -1,7 +1,7 @@
-import { BookOpen, Gauge, LogOut, ReceiptText, RotateCcw, ScanSearch, ShieldUser, Sparkles, UserCircle2, Users, X } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { ROLES } from '@/utils/constants';
+import { BookOpen, Gauge, LogOut, ReceiptText, RotateCcw, ScanSearch, Shield, Sparkles, UserCircle2, Users, X } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 const navItemClass = ({ isActive }) =>
   `sidebar-link ${isActive ? 'sidebar-link-active' : ''}`;
@@ -21,7 +21,7 @@ export default function Sidebar({ mobileOpen = false, onClose }) {
           { to: '/return-book', label: 'Return Book', icon: RotateCcw },
           { to: '/fines', label: 'Fines', icon: ReceiptText },
           { to: '/transactions', label: 'Transactions', icon: Sparkles },
-          { to: '/reports', label: 'Reports', icon: ShieldUser },
+          { to: '/reports', label: 'Reports', icon: Shield },
         ]
       : []),
     { to: '/profile', label: 'Profile', icon: UserCircle2 },

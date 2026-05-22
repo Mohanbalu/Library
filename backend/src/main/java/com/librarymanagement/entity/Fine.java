@@ -45,7 +45,7 @@ public class Fine {
 
     @NotNull
     @PositiveOrZero
-    @Column(name = "fine_amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "fine_amount", nullable = false)
     private Double fineAmount;
 
     @Builder.Default
