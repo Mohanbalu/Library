@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "User APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "users-collection-001"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Get All Users",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/users",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get All Users returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Get All Users returns array', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get User By ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/users/{{user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "users",
+            "{{user_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get User By ID returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('User payload contains email', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.email || jsonData.data?.email).to.be.a('string');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update User",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/users/{{user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "users",
+            "{{user_id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Mohan Balu Updated\",\n  \"phoneNumber\": \"9876501234\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Update User returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Update User response contains fullName', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.fullName || jsonData.data?.fullName).to.include('Updated');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete User",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/users/{{user_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "users",
+            "{{user_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Delete User returns 200 or 204', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

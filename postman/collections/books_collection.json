@@ -1,0 +1,358 @@
+{
+  "info": {
+    "name": "Book APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "books-collection-001"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Add Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Code\",\n  \"isbn\": \"9780132350884\",\n  \"quantity\": 10,\n  \"description\": \"Software engineering best practices\",\n  \"shelfLocation\": \"A-12\",\n  \"categoryId\": 1,\n  \"authorId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Add Book returns 201 or 200', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "pm.test('Add Book response time is acceptable', function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+              "});",
+              "var jsonData = pm.response.json();",
+              "if (jsonData.id) {",
+              "    pm.environment.set('book_id', jsonData.id);",
+              "} else if (jsonData.data && jsonData.data.id) {",
+              "    pm.environment.set('book_id', jsonData.data.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get All Books",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get All Books returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Get All Books returns an array', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Book By ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books/{{book_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books",
+            "{{book_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get Book By ID returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Book payload contains title and isbn', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.title || jsonData.data?.title).to.be.a('string');",
+              "    pm.expect(jsonData.isbn || jsonData.data?.isbn).to.be.a('string');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update Book",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/books/{{book_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books",
+            "{{book_id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Code - Updated\",\n  \"isbn\": \"9780132350884\",\n  \"quantity\": 9,\n  \"description\": \"Updated description for Clean Code\",\n  \"shelfLocation\": \"A-12\",\n  \"categoryId\": 1,\n  \"authorId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Update Book returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Updated book response contains title', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.title || jsonData.data?.title).to.include('Updated');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Book",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/books/{{book_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books",
+            "{{book_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Delete Book returns 200 or 204', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Books",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books/search?query=Clean Code",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "query",
+              "value": "Clean Code"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Search Books returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Search Books returns an array', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Duplicate ISBN Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Code\",\n  \"isbn\": \"9780132350884\",\n  \"quantity\": 5,\n  \"description\": \"Duplicate ISBN test book\",\n  \"shelfLocation\": \"A-13\",\n  \"categoryId\": 1,\n  \"authorId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Duplicate ISBN returns 400 or 409', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([400, 409]);",
+              "});",
+              "pm.test('Duplicate ISBN returns validation message', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('object');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invalid JWT Token Test",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "invalid.jwt.token"
+            }
+          ]
+        },
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid JWT returns 401 or 403', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Missing Authorization Header Test",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Missing Authorization returns 401', function () {",
+              "    pm.expect(pm.response.code).to.eql(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

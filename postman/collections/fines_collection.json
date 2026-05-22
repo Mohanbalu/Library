@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "Fine APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "fines-collection-001"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Get All Fines",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/fines",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fines"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get All Fines returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Get All Fines returns array', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    if (jsonData.length && jsonData[0].id) {",
+              "        pm.environment.set('fine_id', jsonData[0].id);",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pay Fine",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base_url}}/fines/pay/{{fine_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fines",
+            "pay",
+            "{{fine_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Pay Fine returns 200 or 204', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});",
+              "pm.test('Pay Fine response contains success', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('object');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

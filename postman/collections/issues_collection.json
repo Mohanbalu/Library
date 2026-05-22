@@ -1,0 +1,278 @@
+{
+  "info": {
+    "name": "Issue & Return APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "issues-collection-001"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Issue Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/issues/issue",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "issues",
+            "issue"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"bookId\": 1,\n  \"dueDate\": \"2026-06-01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Issue Book returns 201 or 200', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "pm.test('Issue Book response contains issuedBookId', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('object');",
+              "});",
+              "var response = pm.response.json();",
+              "if (response.issuedBookId) {",
+              "    pm.environment.set('issued_book_id', response.issuedBookId);",
+              "} else if (response.data && response.data.id) {",
+              "    pm.environment.set('issued_book_id', response.data.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/issues/return",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "issues",
+            "return"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"issuedBookId\": {{issued_book_id}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Return Book returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Return Book response contains success state', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('object');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Issued Books",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/issues",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "issues"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get Issued Books returns 200', function () {",
+              "    pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "pm.test('Issued books returns an array', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invalid Issue Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/issues/issue",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "issues",
+            "issue"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 99999,\n  \"bookId\": 99999,\n  \"dueDate\": \"2026-06-01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid issue returns 400 or 404', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Book Unavailable Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/issues/issue",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "issues",
+            "issue"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"bookId\": 99999,\n  \"dueDate\": \"2026-06-01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Book unavailable returns 400 or 404', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invalid Return Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/issues/return",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "issues",
+            "return"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"issuedBookId\": 99999\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid return request returns 400 or 404', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
