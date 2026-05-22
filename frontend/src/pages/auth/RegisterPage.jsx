@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { UserPlus, Mail, LockKeyhole, User } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
 import FormInput from '@/components/forms/FormInput';
 import FormSelect from '@/components/forms/FormSelect';
+import { useAuth } from '@/context/AuthContext';
 import { ROLES } from '@/utils/constants';
+import { LockKeyhole, Mail, User, UserPlus } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
     fullName: '',
     email: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: '',
     role: ROLES.USER,
@@ -32,7 +33,12 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      await register(form);
+      await register({
+        fullName: form.fullName,
+        email: form.email,
+        phoneNumber: form.phoneNumber,
+        password: form.password,
+      });
       navigate('/dashboard', { replace: true });
     } catch (error) {
       toast.error(error.message);
@@ -71,6 +77,16 @@ export default function RegisterPage() {
           onChange={handleChange}
           placeholder="name@example.com"
           icon={<Mail size={16} />}
+          required
+        />
+        <FormInput
+          label="Phone Number"
+          type="tel"
+          name="phoneNumber"
+          value={form.phoneNumber}
+          onChange={handleChange}
+          placeholder="Your phone number"
+          icon={<User size={16} />}
           required
         />
         <FormSelect
